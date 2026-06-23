@@ -487,20 +487,21 @@
     }
     .stat-bar-row:last-child { border-bottom: none; }
     .stat-bar-label {
-      font-size: 13px; color: var(--text-1); min-width: 140px;
+      font-size: 13px; color: var(--text-1);
+      width: 140px; flex-shrink: 0;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .stat-bar-label small { color: var(--text-3); font-size: 11px; margin-left: 4px; }
     .stat-bar-track {
       flex: 1; height: 6px; background: rgba(255,255,255,.07);
-      border-radius: 99px; overflow: visible; position: relative;
+      border-radius: 99px; overflow: hidden; position: relative;
     }
-    .stat-bar-fill { overflow: hidden; border-radius: 99px; }
     .stat-bar-fill { height: 100%; border-radius: 99px; background: var(--green); }
     .stat-bar-fill.red   { background: #FF5A4D; }
     .stat-bar-fill.amber { background: #E8B23A; }
     .stat-bar-val {
-      font-size: 12px; color: var(--text-2); min-width: 38px; text-align: right;
+      font-size: 12px; color: var(--text-2); width: 52px; flex-shrink: 0; text-align: right;
+      line-height: 1.3;
     }
 
     /* Round table — full-width card */
@@ -1702,11 +1703,10 @@ function renderStats() {
         const name = [x.meta.first_name, x.meta.last_name].filter(Boolean).join(' ') || `#${x.id}`;
         return `<div class="stat-bar-row">
           <div class="stat-bar-label">${esc(name)}<small>${x.meta.position || '?'}</small></div>
-          <div class="stat-bar-track" style="position:relative">
+          <div class="stat-bar-track">
             <div class="stat-bar-fill amber" style="width:${Math.round((x.avgRound/15)*100)}%"></div>
-            <span style="position:absolute;left:${Math.round((x.avgRound/15)*100)}%;top:50%;transform:translate(-100%,-50%);font-size:9px;font-weight:700;color:var(--text-1);background:rgba(0,0,0,.55);border-radius:3px;padding:1px 3px;white-space:nowrap;pointer-events:none">Ø R${x.avgRound.toFixed(1)}</span>
           </div>
-          <div class="stat-bar-val">${x.cnt}×</div>
+          <div class="stat-bar-val">${x.cnt}×<br><span style="color:var(--text-3);font-size:10px">Ø R${x.avgRound.toFixed(1)}</span></div>
         </div>`;
       }).join('');
 
