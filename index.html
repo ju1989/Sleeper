@@ -1701,8 +1701,11 @@ function renderStats() {
     : blindSpots.map(x => {
         const name = [x.meta.first_name, x.meta.last_name].filter(Boolean).join(' ') || `#${x.id}`;
         return `<div class="stat-bar-row">
-          <div class="stat-bar-label">${esc(name)}<small>${x.meta.position || '?'} · Ø R${x.avgRound.toFixed(1)}</small></div>
-          <div class="stat-bar-track"><div class="stat-bar-fill amber" style="width:${Math.round((x.avgRound/15)*100)}%"></div></div>
+          <div class="stat-bar-label">${esc(name)}<small>${x.meta.position || '?'}</small></div>
+          <div class="stat-bar-track" style="position:relative">
+            <div class="stat-bar-fill amber" style="width:${Math.round((x.avgRound/15)*100)}%"></div>
+            <span style="position:absolute;left:${Math.round((x.avgRound/15)*100)}%;top:50%;transform:translate(-100%,-50%);font-size:9px;font-weight:700;color:var(--text-1);background:rgba(0,0,0,.55);border-radius:3px;padding:1px 3px;white-space:nowrap;pointer-events:none">Ø R${x.avgRound.toFixed(1)}</span>
+          </div>
           <div class="stat-bar-val">${x.cnt}×</div>
         </div>`;
       }).join('');
