@@ -493,8 +493,9 @@
     .stat-bar-label small { color: var(--text-3); font-size: 11px; margin-left: 4px; }
     .stat-bar-track {
       flex: 1; height: 6px; background: rgba(255,255,255,.07);
-      border-radius: 99px; overflow: hidden;
+      border-radius: 99px; overflow: visible; position: relative;
     }
+    .stat-bar-fill { overflow: hidden; border-radius: 99px; }
     .stat-bar-fill { height: 100%; border-radius: 99px; background: var(--green); }
     .stat-bar-fill.red   { background: #FF5A4D; }
     .stat-bar-fill.amber { background: #E8B23A; }
@@ -564,13 +565,40 @@
     }
     .stat-stack-badge.two  { background: rgba(74,168,232,.18); color: #A7D4F2; }
     .stat-stack-badge.three { background: rgba(47,180,107,.18); color: #9FE0BC; }
-    .stat-stack-players { display: flex; flex-wrap: wrap; gap: 5px; }
-    .stat-stack-player {
-      font-size: 12px; color: var(--text-2);
-      background: rgba(255,255,255,.06); border-radius: 6px;
-      padding: 2px 8px; display: flex; align-items: center; gap: 5px;
+    .stat-stack-block {
+      padding: 12px; margin-bottom: 8px; border-radius: 10px;
+      background: rgba(255,255,255,.04); border: 1px solid var(--border);
     }
-    .stat-stack-pcnt { font-size: 10px; color: var(--text-3); font-weight: 600; }
+    .stat-stack-block:last-child { margin-bottom: 0; }
+    .stat-stack-block-header {
+      display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px;
+    }
+    .stat-stack-combo {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; padding: 5px 0;
+      border-top: 1px solid rgba(255,255,255,.05);
+    }
+    .stat-stack-combo:first-child { border-top: none; }
+    .stat-stack-combo-players {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 4px; flex: 1;
+    }
+    .stat-stack-player-name {
+      font-size: 12px; color: var(--text-1); font-weight: 600;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .stat-stack-player-name small {
+      font-size: 10px; color: var(--text-3); font-weight: 400;
+    }
+    .stat-stack-sep {
+      font-size: 11px; color: var(--text-3); padding: 0 2px;
+    }
+    .stat-stack-combo-right {
+      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+    }
+    .stat-stack-combo-cnt {
+      font-size: 12px; font-weight: 700; color: var(--text-2);
+      background: rgba(255,255,255,.07); border-radius: 6px; padding: 1px 7px;
+    }
 
     /* Position distribution */
     .stat-pos-grid { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -1453,20 +1481,49 @@ function renderStats() {
     </div>`;
   }).join('');
 
-  // ── 2. Zu hohe Exposure (>33%) ────────────────────────
+  // ── 2. Überbelichtung (rundengewichtet) ───────────────
+  function exposureThreshold(avgRound) {
+    if (avgRound <= 3)  return 15;
+    if (avgRound <= 6)  return 20;
+    if (avgRound <= 10) return 25;
+    if (avgRound <= 14) return 30;
+    if (avgRound <= 20) return 35;
+    return 50;
+  }
+  // Collect round info per player
+  const playerRounds = {};
+  for (const p of allPicks) {
+    if (!playerRounds[p.player_id]) playerRounds[p.player_id] = [];
+    playerRounds[p.player_id].push(p.round);
+  }
   const overExposed = Object.entries(playerCount)
-    .map(([id, cnt]) => ({ id, cnt, pct: Math.round((cnt / totalLeagues) * 100), p: playerMeta[id] }))
-    .filter(x => x.pct > 33 && totalLeagues >= 3)
-    .sort((a, b) => b.pct - a.pct);
+    .map(([id, cnt]) => {
+      const rounds  = playerRounds[id] || [];
+      const avgRound = rounds.length ? rounds.reduce((a, b) => a + b, 0) / rounds.length : 99;
+      const threshold = exposureThreshold(avgRound);
+      const pct = Math.round((cnt / totalLeagues) * 100);
+      return { id, cnt, pct, avgRound, threshold, p: playerMeta[id] };
+    })
+    .filter(x => x.pct > x.threshold && totalLeagues >= 2)
+    .sort((a, b) => (b.pct - b.threshold) - (a.pct - a.threshold));
 
   const overExHtml = overExposed.length === 0
     ? `<div class="stat-empty">Keine überbelichteten Spieler.</div>`
-    : overExposed.map(x => `
+    : overExposed.map(x => {
+        const excess = x.pct - x.threshold;
+        const barColor = excess >= 20 ? 'red' : 'amber';
+        return `
       <div class="stat-bar-row">
-        <div class="stat-bar-label">${esc(pickName(x.p))}<small>${pickPos(x.p)}</small></div>
-        <div class="stat-bar-track"><div class="stat-bar-fill red" style="width:${x.pct}%"></div></div>
-        <div class="stat-bar-val" style="color:#FFB7B0">${x.pct}%</div>
-      </div>`).join('');
+        <div class="stat-bar-label">
+          ${esc(pickName(x.p))}<small>${pickPos(x.p)} · Ø R${x.avgRound.toFixed(1)}</small>
+        </div>
+        <div class="stat-bar-track">
+          <div class="stat-bar-fill ${barColor}" style="width:${x.pct}%"></div>
+          <div style="position:absolute;left:${x.threshold}%;top:0;bottom:0;width:1.5px;background:rgba(255,255,255,.3)"></div>
+        </div>
+        <div class="stat-bar-val" style="color:${barColor === 'red' ? '#FFB7B0' : '#F1CE7E'}">${x.pct}%<small style="color:var(--text-3)"> / ${x.threshold}%</small></div>
+      </div>`;
+      }).join('');
 
   // ── 3. Team-Exposure ──────────────────────────────────
   const teamCount = {};
@@ -1509,54 +1566,64 @@ function renderStats() {
   }).join('');
 
   // ── 5. Team Stacks ────────────────────────────────────
-  const stackByLeague = {}; // leagueId → { nflTeam → picks[] }
+  // Per league + team: collect picks → derive exact combos
+  const stackCombosByTeam = {}; // nflTeam → { comboKey → { players:[{name,pos}], count } }
   for (const lg of leagues) {
-    stackByLeague[lg.leagueId] = {};
+    const teamMap = {};
     for (const p of lg.myDraftPicks) {
       const t = pickTeam(p);
       if (t && t !== 'FA') {
-        if (!stackByLeague[lg.leagueId][t]) stackByLeague[lg.leagueId][t] = [];
-        stackByLeague[lg.leagueId][t].push(p);
+        if (!teamMap[t]) teamMap[t] = [];
+        teamMap[t].push(p);
       }
     }
-  }
-  const stackTotals = {}; // nflTeam → { two, three, players: { name → count } }
-  for (const teamMap of Object.values(stackByLeague)) {
     for (const [team, picks] of Object.entries(teamMap)) {
-      const cnt = picks.length;
-      if (cnt < 2) continue;
-      if (!stackTotals[team]) stackTotals[team] = { two: 0, three: 0, players: {} };
-      if (cnt >= 3) stackTotals[team].three++;
-      else          stackTotals[team].two++;
-      for (const p of picks) {
-        const n = pickName(p);
-        stackTotals[team].players[n] = (stackTotals[team].players[n] || 0) + 1;
+      if (picks.length < 2) continue;
+      // Sort players by round so the same combo always produces the same key
+      const sorted = [...picks].sort((a, b) => a.round - b.round);
+      const key = sorted.map(p => p.player_id).join('|');
+      if (!stackCombosByTeam[team]) stackCombosByTeam[team] = {};
+      if (!stackCombosByTeam[team][key]) {
+        stackCombosByTeam[team][key] = {
+          players: sorted.map(p => ({ name: pickName(p), pos: pickPos(p), round: p.round })),
+          count: 0,
+          size: sorted.length,
+        };
       }
+      stackCombosByTeam[team][key].count++;
     }
   }
-  const topStacks = Object.entries(stackTotals)
-    .sort((a, b) => (b[1].three * 2 + b[1].two) - (a[1].three * 2 + a[1].two))
+  // Summarize per team: total appearances, max stack size
+  const stackSummary = Object.entries(stackCombosByTeam).map(([team, combos]) => {
+    const comboList = Object.values(combos).sort((a, b) => b.count - a.count || b.size - a.size);
+    const totalLeaguesWithStack = comboList.reduce((s, c) => s + c.count, 0);
+    const maxSize = Math.max(...comboList.map(c => c.size));
+    return { team, comboList, totalLeaguesWithStack, maxSize };
+  }).sort((a, b) => b.totalLeaguesWithStack - a.totalLeaguesWithStack || b.maxSize - a.maxSize)
     .slice(0, 8);
-  const stackHtml = topStacks.length === 0
+
+  const stackHtml = stackSummary.length === 0
     ? `<div class="stat-empty">Keine Stacks gefunden.</div>`
-    : topStacks.map(([team, s]) => {
-        const topPlayers = Object.entries(s.players)
-          .sort((a, b) => b[1] - a[1])
-          .map(([name, cnt]) => `<span class="stat-stack-player">${esc(name)}<span class="stat-stack-pcnt">${cnt}×</span></span>`)
-          .join('');
+    : stackSummary.map(({ team, comboList, totalLeaguesWithStack, maxSize }) => {
+        const combosHtml = comboList.map(combo => {
+          const badge = combo.size >= 3
+            ? `<span class="stat-stack-badge three">${combo.size}-Stack</span>`
+            : `<span class="stat-stack-badge two">2-Stack</span>`;
+          const players = combo.players
+            .map(p => `<span class="stat-stack-player-name">${esc(p.name)}<small>${p.pos} · R${p.round}</small></span>`)
+            .join('<span class="stat-stack-sep">+</span>');
+          return `<div class="stat-stack-combo">
+            <div class="stat-stack-combo-players">${players}</div>
+            <div class="stat-stack-combo-right">${badge}<span class="stat-stack-combo-cnt">${combo.count}×</span></div>
+          </div>`;
+        }).join('');
         return `
-      <div class="stat-stack-row" style="flex-direction:column;align-items:flex-start;gap:6px">
-        <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-          <div>
-            <div class="stat-stack-team">${esc(team)}</div>
-            <div class="stat-stack-detail">${s.two + s.three} ${s.two + s.three !== 1 ? 'Ligen' : 'Liga'} mit Stack</div>
-          </div>
-          <div class="stat-stack-badges">
-            ${s.two   > 0 ? `<div class="stat-stack-badge two">${s.two}× 2-Stack</div>` : ''}
-            ${s.three > 0 ? `<div class="stat-stack-badge three">${s.three}× 3+Stack</div>` : ''}
-          </div>
+      <div class="stat-stack-block">
+        <div class="stat-stack-block-header">
+          <span class="stat-stack-team">${esc(team)}</span>
+          <span class="stat-stack-detail">${totalLeaguesWithStack} ${totalLeaguesWithStack !== 1 ? 'Ligen' : 'Liga'}</span>
         </div>
-        <div class="stat-stack-players">${topPlayers}</div>
+        ${combosHtml}
       </div>`;
       }).join('');
 
@@ -1643,7 +1710,7 @@ function renderStats() {
   // ── Compose grid ──────────────────────────────────────
   grid.innerHTML = [
     statCard('Häufigste Spieler', `Über ${totalLeagues} Ligen`, topPlayersHtml),
-    statCard('Überbelichtung', '> 33% Exposure', overExHtml),
+    statCard('Risikoverteilung', 'Rundengewichtet · Ist% / Max%', overExHtml),
     statCard('NFL Team Exposure', 'Spieler nach Team', teamHtml),
     statCard('Runden-Favoriten', 'Häufigste Picks pro Runde', `
       <table class="stat-round-table">
@@ -1655,7 +1722,7 @@ function renderStats() {
     statCard('Team Stacks', '2+ Spieler eines NFL-Teams', stackHtml),
     statCard('Positionsverteilung', 'Runden 1–3', posHtml),
     statCard('Lieblingsduos', 'Öfter zusammen gedraftet', duoHtml),
-    statCard('Späte Picks (Blind Spots)', 'Nie in R1–R3 gedraftet', blindHtml),
+    statCard('Späte Picks', 'Nie in R1–R3 gedraftet', blindHtml),
   ].join('');
 }
 
