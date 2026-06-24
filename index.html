@@ -1790,23 +1790,39 @@ async function loadBBF26Data() {
     for (const lg of leagues) {
       onProgress(`Lade Daten: ${lg.name}…`);
       await checkRL();
-      const [rosters, lgUsers] = await Promise.all([
+      const [rosters, lgUsers, lgDrafts] = await Promise.all([
         API.rosters(lg.id),
         API.leagueUsers(lg.id),
+        API.drafts(lg.id),
       ]);
       const userMap = {};
       for (const u of (lgUsers || [])) userMap[u.user_id] = u.display_name || u.user_id;
 
+      // Draft picks: player_id -> { pick_no, round }
+      const draftPickMap = {}; // roster_id -> { player_id -> { pick_no, round } }
+      const completedDraft = (lgDrafts || []).find(d => d.status === 'complete');
+      if (completedDraft) {
+        try {
+          const allPicks = await API.draftPicks(completedDraft.draft_id);
+          for (const pk of (allPicks || [])) {
+            if (!draftPickMap[pk.roster_id]) draftPickMap[pk.roster_id] = {};
+            draftPickMap[pk.roster_id][pk.player_id] = { pick_no: pk.pick_no, round: pk.round };
+          }
+        } catch (_) {}
+      }
+
       for (const r of (rosters || [])) {
         const fpts = (r.settings?.fpts ?? 0) + (r.settings?.fpts_decimal ?? 0) / 100;
         entries.push({
-          leagueName: lg.name,
-          leagueId:   lg.id,
-          leagueNum:  bbf26Num(lg.name),
-          username:   userMap[r.owner_id] || r.owner_id || '—',
-          userId:     r.owner_id,
+          leagueName:   lg.name,
+          leagueId:     lg.id,
+          leagueNum:    bbf26Num(lg.name),
+          username:     userMap[r.owner_id] || r.owner_id || '—',
+          userId:       r.owner_id,
           fpts,
-          playerIds:  r.players || [],
+          playerIds:    r.players || [],
+          playersPoints: r.players_points || {},
+          pickMap:      draftPickMap[r.roster_id] || {},
         });
       }
     }
@@ -1871,12 +1887,69 @@ function renderBBF26Results(entries, players, myUserId, totalLeagues) {
       const pts = e.fpts === 0 ? '—' : e.fpts.toFixed(2);
       const badgeCls = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : rank <= 4 ? 'top' : '';
 
-      const playerTags = isExp ? e.playerIds.map(pid => {
-        const p = players[pid];
-        const name = p?.full_name || p?.last_name || pid;
-        const pos  = p?.position || '?';
-        return `<span class="bbf26-player-tag">${esc(pos)} ${esc(name)}</span>`;
-      }).join('') : '';
+      let playerTableHtml = '';
+      if (isExp) {
+        const posOrder = ['QB','RB','WR','TE','K','DEF'];
+        const byPos = {};
+        for (const pid of e.playerIds) {
+          const p = players[pid];
+          const pos = p?.position || '?';
+          const pts = e.playersPoints?.[pid] ?? 0;
+          const pick = e.pickMap?.[pid] ?? null;
+          if (!byPos[pos]) byPos[pos] = [];
+          byPos[pos].push({
+            name: p?.full_name || p?.last_name || pid,
+            team: p?.team || '',
+            pts,
+            pickNo: pick?.pick_no ?? null,
+            round:  pick?.round  ?? null,
+          });
+        }
+        // Sort within each group: points desc, then pick_no asc (nulls last)
+        for (const grp of Object.values(byPos)) {
+          grp.sort((a, b) => {
+            if (b.pts !== a.pts) return b.pts - a.pts;
+            if (a.pickNo == null && b.pickNo == null) return 0;
+            if (a.pickNo == null) return 1;
+            if (b.pickNo == null) return -1;
+            return a.pickNo - b.pickNo;
+          });
+        }
+        const posGroups = [
+          ...posOrder.filter(p => byPos[p]),
+          ...Object.keys(byPos).filter(p => !posOrder.includes(p)).sort(),
+        ];
+        const rows = posGroups.map(pos => {
+          return byPos[pos].map((pl, ci) => `<tr>
+            <td style="width:36px;padding-right:14px;font-size:11px;font-weight:800;color:var(--green);vertical-align:middle;border-top:1px solid var(--border)">
+              ${ci === 0 ? esc(pos) : ''}
+            </td>
+            <td style="padding:8px 10px 8px 0;vertical-align:middle;border-top:1px solid var(--border)">
+              <div class="stat-round-cell-name">${esc(pl.name)}</div>
+              <div class="stat-round-cell-sub">${esc(pl.team) || '—'}</div>
+            </td>
+            <td style="padding:8px 10px 8px 0;vertical-align:middle;border-top:1px solid var(--border);white-space:nowrap">
+              <span style="font-size:11px;font-weight:700;background:rgba(47,180,107,.15);color:#9FE0BC;border-radius:5px;padding:2px 7px">
+                ${pl.pts > 0 ? pl.pts.toFixed(1) + ' Pkt' : '—'}
+              </span>
+            </td>
+            <td style="padding:8px 0 8px 0;vertical-align:middle;border-top:1px solid var(--border);white-space:nowrap">
+              <span style="font-size:11px;font-weight:700;background:rgba(255,255,255,.07);color:var(--text-3);border-radius:5px;padding:2px 7px">
+                ${pl.pickNo != null ? 'Runde ' + pl.round + ' · Pick ' + pl.pickNo : '—'}
+              </span>
+            </td>
+          </tr>`).join('');
+        }).join('');
+        playerTableHtml = `<table class="stat-round-table" style="margin-top:4px;table-layout:auto">
+          <thead><tr>
+            <th style="width:36px"></th>
+            <th>Spieler</th>
+            <th>Punkte</th>
+            <th>Draftposition</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+      }
 
       const separator = (separatorIdx !== -1 && i === separatorIdx)
         ? `<tr><td colspan="5" style="padding:0;border-bottom:none">
@@ -1894,8 +1967,8 @@ function renderBBF26Results(entries, players, myUserId, totalLeagues) {
         <td style="color:var(--text-3)">${esc(e.leagueName.replace(BBF26_PREFIX, '#'))}</td>
         <td class="strong">${pts}</td>
         <td><button class="bbf26-expand-btn" data-expand="${i}">${isExp ? '▴ Details' : '▾ Details'}</button></td>
-      </tr>${isExp ? `<tr class="${isMe ? 'me' : ''}"><td colspan="5" style="padding:0 14px 12px">
-        <div class="bbf26-players">${playerTags}</div>
+      </tr>${isExp ? `<tr class="${isMe ? 'me' : ''}"><td colspan="5" style="padding:0 14px 14px">
+        ${playerTableHtml}
       </td></tr>` : ''}`;
     }).join('');
   }
