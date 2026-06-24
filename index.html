@@ -175,7 +175,7 @@
 
     .page-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
 
-    .tab-group { display: flex; gap: 5px; padding: 4px; background: #161922; border: 1px solid var(--border); border-radius: 12px; }
+    .tab-group { display: flex; flex-wrap: wrap; gap: 5px; padding: 4px; background: #161922; border: 1px solid var(--border); border-radius: 12px; }
     .tab-btn {
       padding: 8px 14px;
       border-radius: 9px;
@@ -1851,9 +1851,14 @@ function renderBBF26Results(entries, players, myUserId, totalLeagues) {
   }
   displayed.sort((a, b) => b.fpts - a.fpts);
 
-  const myEntrySet = new Set(myEntries.map(e => e.leagueId));
+  // Index of first entry that is mine but not in top 15
+  const top15Ids = new Set(top15.map((e, i) => e.userId + '|' + e.leagueId));
+  const separatorIdx = displayed.findIndex(
+    e => e.userId === myUserId && !top15Ids.has(e.userId + '|' + e.leagueId)
+  );
+
   const tableLabel = document.getElementById('bbf26-table-label');
-  tableLabel.textContent = `Top 15 · ${myEntries.length > 0 ? '+ deine Einträge' : ''}`;
+  tableLabel.textContent = `Top 15${myEntries.length > 0 ? ' · + deine Einträge' : ''}`;
 
   const expanded = new Set();
   const tbody = document.getElementById('bbf26-tbody');
@@ -1873,7 +1878,17 @@ function renderBBF26Results(entries, players, myUserId, totalLeagues) {
         return `<span class="bbf26-player-tag">${esc(pos)} ${esc(name)}</span>`;
       }).join('') : '';
 
-      return `<tr class="${isMe ? 'me' : ''}" data-row="${i}">
+      const separator = (separatorIdx !== -1 && i === separatorIdx)
+        ? `<tr><td colspan="5" style="padding:0;border-bottom:none">
+             <div style="display:flex;align-items:center;gap:10px;padding:6px 14px">
+               <div style="flex:1;height:1px;background:var(--border)"></div>
+               <span style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3)">Deine weiteren Platzierung(en)</span>
+               <div style="flex:1;height:1px;background:var(--border)"></div>
+             </div>
+           </td></tr>`
+        : '';
+
+      return `${separator}<tr class="${isMe ? 'me' : ''}" data-row="${i}">
         <td><span class="rank-badge ${badgeCls}">${rank}</span></td>
         <td class="strong">${esc(e.username)}${isMe ? ' <span style="font-size:10px;color:var(--green)">●</span>' : ''}</td>
         <td style="color:var(--text-3)">${esc(e.leagueName.replace(BBF26_PREFIX, '#'))}</td>
