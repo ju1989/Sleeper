@@ -353,6 +353,17 @@
     }
     .toggle-btn:hover { background: var(--bg-inner2); color: var(--text-2); }
 
+    /* Refresh button */
+    .refresh-btn {
+      display: flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 8px; border: none; cursor: pointer;
+      background: rgba(255,255,255,.06); color: var(--text-3);
+      font-size: 14px; flex-shrink: 0; transition: background var(--tr), color var(--tr), transform .3s;
+      margin-left: auto;
+    }
+    .refresh-btn:hover { background: rgba(255,255,255,.12); color: var(--text-1); }
+    .refresh-btn.spinning { animation: spin .7s linear infinite; pointer-events: none; }
+
     /* Expanded */
     .expanded-content { display: flex; flex-direction: column; gap: 14px; border-top: 1px solid var(--border-in); padding-top: 14px; }
 
@@ -614,6 +625,97 @@
     .stat-pos-chip.K   { background: rgba(255,255,255,.10); color: var(--text-3); }
     .stat-pos-chip.DEF { background: rgba(255,255,255,.10); color: var(--text-3); }
 
+    /* ── History view ────────────────────────────────── */
+    .history-view { display: none; }
+    .history-setup {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 24px; margin-bottom: 20px;
+    }
+    .history-setup-title {
+      font-family: var(--font-d); font-weight: 700; font-size: 15px;
+      color: var(--text-1); margin-bottom: 4px;
+    }
+    .history-setup-sub { font-size: 13px; color: var(--text-3); margin-bottom: 20px; }
+    .season-grid {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+    }
+    .season-chip {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 600;
+      cursor: pointer; border: 1.5px solid var(--border); color: var(--text-2);
+      background: transparent; transition: all .15s; user-select: none;
+      font-family: var(--font-b);
+    }
+    .season-chip input[type=checkbox] { display: none; }
+    .season-chip.checked { background: var(--card); border-color: var(--green); color: var(--text-1); }
+    .load-history-btn {
+      padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 700;
+      background: var(--green); color: #fff; border: none; cursor: pointer;
+      font-family: var(--font-b); transition: opacity .15s;
+    }
+    .load-history-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .history-progress {
+      display: none; align-items: center; gap: 14px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px 24px; margin-bottom: 20px;
+    }
+    .history-spinner {
+      width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,.1);
+      border-top-color: var(--green); border-radius: 50%;
+      animation: spin .7s linear infinite; flex-shrink: 0;
+    }
+    .history-progress-text { font-size: 13px; color: var(--text-2); }
+    .history-ratelimit {
+      font-size: 11px; color: #E8B23A; margin-top: 2px;
+    }
+    .history-results { display: none; }
+    .history-table-wrap {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden; margin-bottom: 18px;
+    }
+    .history-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .history-table th {
+      padding: 10px 14px; text-align: left; font-size: 10px; font-weight: 700;
+      letter-spacing: .07em; text-transform: uppercase; color: var(--text-3);
+      background: rgba(255,255,255,.03); border-bottom: 1px solid var(--border);
+    }
+    .history-table td {
+      padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,.05);
+      color: var(--text-2); vertical-align: middle;
+    }
+    .history-table tr:last-child td { border-bottom: none; }
+    .history-table td.strong { color: var(--text-1); font-weight: 600; }
+    .rank-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%; font-size: 12px; font-weight: 800;
+      background: rgba(255,255,255,.07); color: var(--text-2);
+    }
+    .rank-badge.gold   { background: rgba(255,195,0,.2);  color: #FFD700; }
+    .rank-badge.silver { background: rgba(192,192,192,.2); color: #C0C0C0; }
+    .rank-badge.bronze { background: rgba(205,127,50,.2);  color: #CD7F32; }
+    .rank-badge.top    { background: rgba(47,180,107,.15); color: #9FE0BC; }
+    .history-avg-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;
+    }
+    .history-avg-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px;
+    }
+    .history-avg-label {
+      font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--text-3); margin-bottom: 8px;
+    }
+    .history-avg-val {
+      font-family: var(--font-d); font-size: 22px; font-weight: 800; color: var(--text-1);
+    }
+    .history-avg-sub { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+    .history-section-label {
+      font-family: var(--font-d); font-weight: 700; font-size: 14px;
+      color: var(--text-1); margin: 20px 0 10px;
+    }
+
     @media (max-width: 600px) {
       .app-header { padding: 12px 16px; }
       .app-main { padding: 16px; }
@@ -675,13 +777,14 @@
     <div class="page-top">
       <div>
         <div class="page-eyebrow" id="page-eyebrow">Saison 2025</div>
-        <h1 class="page-title">Meine Ligen</h1>
+        <h1 class="page-title">Dashboard</h1>
         <div class="page-summary" id="page-summary">Lädt…</div>
       </div>
       <div class="tab-group">
         <button class="tab-btn active" id="tab-all">Alle Ligen</button>
         <button class="tab-btn" id="tab-action">Handlungsbedarf</button>
         <button class="tab-btn" id="tab-stats">Statistiken</button>
+        <button class="tab-btn" id="tab-history">Verlauf</button>
       </div>
     </div>
 
@@ -702,6 +805,36 @@
     <div class="stats-view" id="stats-view">
       <div class="stats-filter" id="stats-league-filter"></div>
       <div class="stats-grid" id="stats-grid"></div>
+    </div>
+
+    <div class="history-view" id="history-view">
+      <div class="history-setup">
+        <div class="history-setup-title">Vergangene Saisons laden</div>
+        <div class="history-setup-sub">Wähle die Jahre aus, für die du deine Ergebnisse sehen möchtest. Nur abgeschlossene Ligen werden berücksichtigt.</div>
+        <div class="season-grid" id="season-grid"></div>
+        <button class="load-history-btn" id="load-history-btn" disabled>Daten laden</button>
+      </div>
+      <div class="history-progress" id="history-progress">
+        <div class="history-spinner"></div>
+        <div>
+          <div class="history-progress-text" id="history-progress-text">Lade Daten…</div>
+          <div class="history-ratelimit" id="history-ratelimit" style="display:none">⚠ API-Limit erreicht — kurze Pause…</div>
+        </div>
+      </div>
+      <div class="history-results" id="history-results">
+        <div class="history-section-label">Ø Rang nach Teamanzahl</div>
+        <div class="history-avg-grid" id="history-avg-grid"></div>
+        <div class="history-section-label">Alle Saisons</div>
+        <div class="history-table-wrap">
+          <table class="history-table">
+            <thead>
+              <tr></tr>
+              <tr id="history-filter-row"></tr>
+            </thead>
+            <tbody id="history-tbody"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </main>
 </div>
@@ -793,12 +926,16 @@ const API = {
   user:        u      => API.get(`/user/${u}`),
   state:       ()     => API.get('/state/nfl'),
   leagues:     (u, s) => API.get(`/user/${u}/leagues/nfl/${s}`),
+  league:      lid    => API.get(`/league/${lid}`),
   rosters:     lid    => API.get(`/league/${lid}/rosters`),
   leagueUsers: lid    => API.get(`/league/${lid}/users`),
   matchups:    (l, w) => API.get(`/league/${l}/matchups/${w}`, 60_000),
   drafts:      lid    => API.get(`/league/${lid}/drafts`),
   draft:       did    => API.get(`/draft/${did}`, 60_000),
-  draftPicks:  did    => API.get(`/draft/${did}/picks`, 30_000),
+  draftPicks:      did => API.get(`/draft/${did}/picks`, 30_000),
+  winnersBracket:  lid => API.get(`/league/${lid}/winners_bracket`),
+  losersBracket:   lid => API.get(`/league/${lid}/losers_bracket`),
+  userLeagues:     (uid, season) => API.get(`/user/${uid}/leagues/nfl/${season}`),
   players:     ()     => API.get('/players/nfl', 86_400_000, 'lz_players_v2'),
 };
 
@@ -809,8 +946,51 @@ function esc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function stripEmoji(s) {
+  return (s || '')
+    .replace(/[\u{1F1E6}-\u{1F1FF}]/gu, '') // regional indicators (flag components: AT, DE, CH …)
+    .replace(/[\u{1F000}-\u{1FFFF}]/gu, '') // misc emoji & symbols block
+    .replace(/[☀-➿]/gu, '')                // dingbats & misc symbols
+    .replace(/️/gu, '')                      // variation selector-16
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Detect flag emoji support once via canvas: flags render as colored pixels,
+// unsupported fallback (letter pairs like "DE") renders as grayscale/black.
+const FLAG_EMOJI_OK = (() => {
+  try {
+    const c = document.createElement('canvas');
+    c.width = c.height = 20;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, 20, 20);
+    ctx.font = '16px serif';
+    ctx.fillText('🇩🇪', 0, 16);
+    const px = ctx.getImageData(0, 0, 20, 20).data;
+    for (let i = 0; i < px.length; i += 4) {
+      if (Math.max(px[i], px[i+1], px[i+2]) - Math.min(px[i], px[i+1], px[i+2]) > 20) return true;
+    }
+  } catch (_) {}
+  return false;
+})();
+
+function displayName(s) {
+  return FLAG_EMOJI_OK ? (s || '') : stripEmoji(s);
+}
+
 function initials(name) {
-  return (name || '').split(/[\s\-_]+/).filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 3) || '??';
+  return stripEmoji(name || '')
+    .split(/[\s\-_]+/)
+    .filter(Boolean)
+    .map(w => {
+      const first = [...w][0];
+      return /\p{L}/u.test(first) ? first : '';
+    })
+    .filter(Boolean)
+    .join('')
+    .toUpperCase()
+    .slice(0, 3) || '??';
 }
 
 function leagueColor(id) {
@@ -1348,12 +1528,12 @@ function renderCard(lg, week, isExpanded) {
       <div class="card-body">
         <div class="card-hrow">
           <div class="avatar" style="background:${lg.color}">${esc(lg.initials)}</div>
-          <div class="card-names">
+          <div class="card-names" style="flex:1;min-width:0">
             <h3 class="league-name">
               <a href="https://sleeper.com/leagues/${esc(lg.leagueId)}" target="_blank" rel="noopener"
                  style="color:inherit;text-decoration:none;"
                  onmouseover="this.style.textDecoration='underline'"
-                 onmouseout="this.style.textDecoration='none'">${esc(lg.name)}</a>${bbBadge}
+                 onmouseout="this.style.textDecoration='none'">${esc(displayName(lg.name))}</a>${bbBadge}
             </h3>
             <div class="league-meta">${esc(lg.meta)}</div>
             <span class="chip" style="background:${sev.bg};color:${sev.c};border:1px solid ${sev.border}">
@@ -1361,6 +1541,7 @@ function renderCard(lg, week, isExpanded) {
               ${sev.label}
             </span>
           </div>
+          <button class="refresh-btn" data-refresh="${esc(lg.leagueId)}" title="Liga aktualisieren">↻</button>
         </div>
         ${recordHtml}
         ${bannerHtml}
@@ -1375,6 +1556,275 @@ function renderCard(lg, week, isExpanded) {
     </div>`;
 }
 
+// ══════════════════════════════════════════════════════════
+//  HISTORY
+// ══════════════════════════════════════════════════════════
+function renderHistorySetup() {
+  const currentYear = new Date().getFullYear();
+  const grid = document.getElementById('season-grid');
+  if (grid.children.length === 0) {
+    // Build season chips for years 2017–(currentYear-1)
+    const years = [];
+    for (let y = currentYear - 1; y >= 2017; y--) years.push(y);
+    grid.innerHTML = years.map(y => `
+      <label class="season-chip${AppState.history.selectedSeasons.has(y) ? ' checked' : ''}" data-year="${y}">
+        <input type="checkbox" value="${y}" ${AppState.history.selectedSeasons.has(y) ? 'checked' : ''}>
+        ${y}
+      </label>`).join('');
+    grid.addEventListener('change', e => {
+      const chip = e.target.closest('.season-chip');
+      const y = parseInt(chip.dataset.year, 10);
+      if (e.target.checked) AppState.history.selectedSeasons.add(y);
+      else AppState.history.selectedSeasons.delete(y);
+      chip.classList.toggle('checked', e.target.checked);
+      document.getElementById('load-history-btn').disabled = AppState.history.selectedSeasons.size === 0;
+    });
+    document.getElementById('load-history-btn').addEventListener('click', () => {
+      if (AppState.history.selectedSeasons.size === 0) return;
+      loadHistoryData([...AppState.history.selectedSeasons].sort((a,b) => b - a));
+    });
+  }
+  document.getElementById('load-history-btn').disabled = AppState.history.selectedSeasons.size === 0;
+  // If we have data already, show it
+  if (AppState.history.data) renderHistoryResults(AppState.history.data);
+}
+
+function parsePlacement(winners, losers, myRosterId) {
+  const mid = String(myRosterId);
+  // Find the match where this roster got a placement (p field)
+  const allMatches = [...(winners || []), ...(losers || [])];
+  for (const m of allMatches) {
+    if (m.p == null) continue;
+    if (String(m.w) === mid) return m.p;
+    if (String(m.l) === mid) return m.p + 1;
+  }
+  return null;
+}
+
+async function loadHistoryData(seasons) {
+  AppState.history.loading = true;
+  AppState.history.data = null;
+
+  const progressEl  = document.getElementById('history-progress');
+  const progressTxt = document.getElementById('history-progress-text');
+  const ratelimitEl = document.getElementById('history-ratelimit');
+  const resultsEl   = document.getElementById('history-results');
+
+  progressEl.style.display = 'flex';
+  resultsEl.style.display  = 'none';
+  document.getElementById('load-history-btn').disabled = true;
+
+  const userId = AppState.user?.user_id;
+  const rows = [];
+
+  for (const season of seasons) {
+    progressTxt.textContent = `Lade Saison ${season}…`;
+    ratelimitEl.style.display = 'none';
+    let leaguesForSeason;
+    try {
+      leaguesForSeason = await API.userLeagues(userId, season);
+    } catch (_) { continue; }
+
+    const completed = (leaguesForSeason || []).filter(l => l.status === 'complete');
+    for (const lg of completed) {
+      progressTxt.textContent = `${season} · ${lg.name}`;
+      let myRoster = null;
+      let allRosters = [];
+      try {
+        allRosters = await API.rosters(lg.league_id) || [];
+        myRoster = allRosters.find(r => String(r.owner_id) === String(userId));
+      } catch (_) {}
+      if (!myRoster) continue;
+
+      // Calculate regular season rank: sort by wins desc, then fpts desc
+      const sorted = [...allRosters].sort((a, b) => {
+        const wDiff = (b.settings?.wins ?? 0) - (a.settings?.wins ?? 0);
+        if (wDiff !== 0) return wDiff;
+        const fptsA = (a.settings?.fpts ?? 0) + (a.settings?.fpts_decimal ?? 0) / 100;
+        const fptsB = (b.settings?.fpts ?? 0) + (b.settings?.fpts_decimal ?? 0) / 100;
+        return fptsB - fptsA;
+      });
+      const regRank = sorted.findIndex(r => r.roster_id === myRoster.roster_id) + 1 || null;
+      const totalTeams = lg.total_rosters ?? 12;
+
+      let playoffPlacement = null;
+      try {
+        // Check rate limit
+        if (RL.tokens < 2) {
+          ratelimitEl.style.display = 'block';
+          await new Promise(r => setTimeout(r, Math.ceil((2 - RL.tokens) * 120) + 200));
+          ratelimitEl.style.display = 'none';
+        }
+        const [wb, lb] = await Promise.all([
+          API.winnersBracket(lg.league_id),
+          API.losersBracket(lg.league_id),
+        ]);
+        playoffPlacement = parsePlacement(wb, lb, myRoster.roster_id);
+      } catch (_) {}
+
+      rows.push({
+        season,
+        name: lg.name,
+        leagueId: lg.league_id,
+        totalTeams,
+        regRank,
+        playoffPlacement,
+      });
+    }
+  }
+
+  AppState.history.loading = false;
+  AppState.history.data = rows;
+  progressEl.style.display = 'none';
+  document.getElementById('load-history-btn').disabled = false;
+  renderHistoryResults(rows);
+}
+
+// History table state
+const HistoryTable = { sortCol: 'season', sortDir: -1, filters: { season: '', name: '', totalTeams: '', regRank: '', playoffPlacement: '' } };
+
+function rankBadge(rank, total) {
+  if (rank == null) return `<span style="color:var(--text-3)">—</span>`;
+  let cls = '';
+  if (rank === 1) cls = 'gold';
+  else if (rank === 2) cls = 'silver';
+  else if (rank === 3) cls = 'bronze';
+  else if (rank <= Math.ceil(total / 4)) cls = 'top';
+  return `<span class="rank-badge ${cls}">${rank}</span>`;
+}
+
+function renderHistoryResults(rows) {
+  const resultsEl = document.getElementById('history-results');
+  resultsEl.style.display = 'block';
+
+  // Avg rank by team count (using playoff placement if available, else regRank)
+  const byTeamCount = {};
+  for (const r of rows) {
+    const rank = r.playoffPlacement ?? r.regRank;
+    if (rank == null) continue;
+    if (!byTeamCount[r.totalTeams]) byTeamCount[r.totalTeams] = [];
+    byTeamCount[r.totalTeams].push(rank);
+  }
+  const avgGrid = document.getElementById('history-avg-grid');
+  const teamSizes = Object.keys(byTeamCount).map(Number).sort((a,b) => a-b);
+  if (teamSizes.length === 0) {
+    avgGrid.innerHTML = `<div style="color:var(--text-3);font-size:13px">Keine Daten verfügbar.</div>`;
+  } else {
+    avgGrid.innerHTML = teamSizes.map(tc => {
+      const ranks = byTeamCount[tc];
+      const avg = ranks.reduce((s,v) => s+v, 0) / ranks.length;
+      const pct = ((tc - avg) / (tc - 1) * 100).toFixed(0);
+      return `<div class="history-avg-card">
+        <div class="history-avg-label">${tc}-Team-Ligen</div>
+        <div class="history-avg-val">Ø ${avg.toFixed(1)}</div>
+        <div class="history-avg-sub">${ranks.length} Liga${ranks.length !== 1 ? 'en' : ''} · Top ${pct}%</div>
+      </div>`;
+    }).join('');
+  }
+
+  renderHistoryTable(rows);
+}
+
+const HISTORY_COLS = [
+  { key: 'season',           label: 'Saison' },
+  { key: 'name',             label: 'Liga' },
+  { key: 'totalTeams',       label: 'Teams' },
+  { key: 'regRank',          label: 'Reg.-Rang' },
+  { key: 'playoffPlacement', label: 'Playoff' },
+];
+
+function initHistoryTableListeners() {
+  const thead = document.querySelector('.history-table thead tr');
+  const filterRow = document.getElementById('history-filter-row');
+
+  // Sort: permanent listener on the stable header row
+  thead.addEventListener('click', e => {
+    const th = e.target.closest('th[data-sort]');
+    if (!th) return;
+    const col = th.dataset.sort;
+    if (HistoryTable.sortCol === col) HistoryTable.sortDir *= -1;
+    else { HistoryTable.sortCol = col; HistoryTable.sortDir = col === 'name' ? 1 : -1; }
+    renderHistoryTable(AppState.history.data);
+  });
+
+  // Filter: permanent listener on the stable filter row
+  filterRow.addEventListener('input', e => {
+    const inp = e.target.closest('input[data-filter]');
+    if (!inp) return;
+    HistoryTable.filters[inp.dataset.filter] = inp.value;
+    renderHistoryTable(AppState.history.data);
+  });
+}
+
+function renderHistoryTable(rows) {
+  const { sortCol, sortDir, filters } = HistoryTable;
+  const tbody = document.getElementById('history-tbody');
+  const thead = document.querySelector('.history-table thead tr');
+  const filterRow = document.getElementById('history-filter-row');
+
+  // First-time setup: build static header cells and filter inputs once
+  if (!thead.querySelector('th[data-sort]')) {
+    thead.innerHTML = HISTORY_COLS.map(c =>
+      `<th style="cursor:pointer;user-select:none;white-space:nowrap" data-sort="${c.key}">
+        ${c.label}<span class="sort-arrow" data-col="${c.key}" style="font-size:9px"> ⇅</span>
+      </th>`).join('');
+
+    filterRow.innerHTML = HISTORY_COLS.map(c =>
+      `<td style="padding:4px 6px;border-bottom:1px solid var(--border)">
+        <input data-filter="${c.key}" placeholder="Filter…"
+          style="width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);
+                 border-radius:6px;padding:4px 7px;font-size:11px;color:var(--text-1);
+                 outline:none;font-family:var(--font-b);box-sizing:border-box">
+      </td>`).join('');
+
+    initHistoryTableListeners();
+  }
+
+  // Update sort arrows only (no innerHTML rebuild)
+  thead.querySelectorAll('.sort-arrow').forEach(span => {
+    const col = span.dataset.col;
+    const isActive = sortCol === col;
+    span.textContent = isActive ? (sortDir === 1 ? ' ▴' : ' ▾') : ' ⇅';
+    span.style.opacity = isActive ? '1' : '0.35';
+  });
+
+  // Apply filters
+  let visible = rows.filter(r => {
+    for (const [k, v] of Object.entries(filters)) {
+      if (!v) continue;
+      const val = String(r[k] ?? '').toLowerCase();
+      if (!val.includes(v.toLowerCase())) return false;
+    }
+    return true;
+  });
+
+  // Apply sort
+  visible.sort((a, b) => {
+    let av = a[sortCol], bv = b[sortCol];
+    // Nulls always last
+    if (av == null && bv == null) return 0;
+    if (av == null) return 1;
+    if (bv == null) return -1;
+    if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * sortDir;
+    return String(av).localeCompare(String(bv)) * sortDir;
+  });
+
+  if (visible.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-3);padding:20px">Keine Ergebnisse.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = visible.map(r => `<tr>
+    <td class="strong">${r.season}</td>
+    <td><a href="https://sleeper.com/leagues/${esc(r.leagueId)}" target="_blank" rel="noopener"
+           style="color:var(--text-2);text-decoration:none"
+           onmouseover="this.style.textDecoration='underline'"
+           onmouseout="this.style.textDecoration='none'">${esc(r.name)}</a></td>
+    <td style="color:var(--text-3)">${r.totalTeams}</td>
+    <td>${rankBadge(r.regRank, r.totalTeams)}</td>
+    <td>${rankBadge(r.playoffPlacement, r.totalTeams)}</td>
+  </tr>`).join('');
+}
+
 function renderDashboard() {
   const { leagues, filter, expanded, nflState } = AppState;
   const week    = nflState?.week ?? 1;
@@ -1383,28 +1833,34 @@ function renderDashboard() {
   const actionLeagues = leagues.filter(l => l.severity === 'urgent' || l.severity === 'attention');
   const actionCount   = actionLeagues.length;
   const visible = filter === 'action' ? actionLeagues : leagues;
-  const isStats = filter === 'stats';
+  const isStats   = filter === 'stats';
+  const isHistory = filter === 'history';
 
   // Show/hide views
-  document.getElementById('cards-grid').style.display = isStats ? 'none' : 'grid';
-  document.getElementById('stats-view').style.display = isStats ? 'block' : 'none';
-  document.getElementById('alert-banner').style.display = isStats ? 'none' : '';
+  document.getElementById('cards-grid').style.display    = (!isStats && !isHistory) ? 'grid'  : 'none';
+  document.getElementById('stats-view').style.display    = isStats   ? 'block' : 'none';
+  document.getElementById('history-view').style.display  = isHistory ? 'block' : 'none';
+  document.getElementById('alert-banner').style.display  = (isStats || isHistory) ? 'none' : '';
 
   // Header
   document.getElementById('header-week').textContent = `NFL ${season} · Woche ${week}`;
   document.getElementById('page-eyebrow').textContent = `Saison ${season}`;
   document.getElementById('page-summary').textContent = isStats
     ? `Saison ${season} · ${total} Ligen analysiert`
-    : `Saison ${season} · ${total} Liga${total !== 1 ? 'en' : ''} · ${actionCount} mit Handlungsbedarf`;
+    : isHistory
+      ? 'Historische Ligaergebnisse'
+      : `Saison ${season} · ${total} Liga${total !== 1 ? 'en' : ''} · ${actionCount} mit Handlungsbedarf`;
 
   // Tabs
   document.getElementById('tab-all').textContent    = `Alle Ligen · ${total}`;
   document.getElementById('tab-action').textContent = `Handlungsbedarf · ${actionCount}`;
-  document.getElementById('tab-all').classList.toggle('active', filter === 'all');
-  document.getElementById('tab-action').classList.toggle('active', filter === 'action');
-  document.getElementById('tab-stats').classList.toggle('active', filter === 'stats');
+  document.getElementById('tab-all').classList.toggle('active',     filter === 'all');
+  document.getElementById('tab-action').classList.toggle('active',  filter === 'action');
+  document.getElementById('tab-stats').classList.toggle('active',   filter === 'stats');
+  document.getElementById('tab-history').classList.toggle('active', filter === 'history');
 
-  if (isStats) { renderStats(); return; }
+  if (isStats)   { renderStats(); return; }
+  if (isHistory) { renderHistorySetup(); return; }
 
   // Alert banner
   const onClock    = leagues.filter(l => l.isOnClock).length;
@@ -1440,7 +1896,7 @@ function renderStats() {
   const filterEl = document.getElementById('stats-league-filter');
   filterEl.innerHTML = allLeagues.map(lg => `
     <button class="stats-pill ${!excl.has(lg.leagueId) ? 'active' : ''}"
-            data-stats-toggle="${lg.leagueId}">${esc(lg.name)}</button>
+            data-stats-toggle="${lg.leagueId}">${esc(displayName(lg.name))}</button>
   `).join('');
 
   const leagues = allLeagues.filter(lg => !excl.has(lg.leagueId));
@@ -1749,6 +2205,7 @@ const AppState = {
   expanded: {},
   filter: 'all',
   statsExcluded: new Set(),
+  history: { selectedSeasons: new Set(), data: null, loading: false },
 };
 
 function setLoading(show, text = 'Daten werden geladen…') {
@@ -1847,6 +2304,44 @@ document.addEventListener('click', e => {
   }
 });
 
+// Refresh single league card
+document.addEventListener('click', async e => {
+  const btn = e.target.closest('[data-refresh]');
+  if (!btn) return;
+  const leagueId = btn.dataset.refresh;
+  const idx = AppState.leagues.findIndex(l => l.leagueId === leagueId);
+  if (idx === -1) return;
+
+  btn.classList.add('spinning');
+
+  try {
+    const { user, nflState } = AppState;
+    const week    = nflState?.week ?? 1;
+    const players = await API.players();
+
+    // Re-fetch the league info
+    const leagueInfo = await API.league(leagueId);
+    const updated = await processLeague(leagueInfo, user.user_id, week, players);
+    if (updated) {
+      AppState.leagues[idx] = updated;
+      // Re-render only the affected card
+      const cardEl = document.querySelector(`.card[data-id="${CSS.escape(leagueId)}"]`);
+      if (cardEl) {
+        const isExpanded = !!AppState.expanded[leagueId];
+        const tmp = document.createElement('div');
+        tmp.innerHTML = renderCard(updated, week, isExpanded);
+        cardEl.replaceWith(tmp.firstElementChild);
+      }
+    }
+  } catch (err) {
+    console.error('Refresh failed', err);
+  } finally {
+    // Button may have been replaced by re-render; find the new one
+    const newBtn = document.querySelector(`[data-refresh="${CSS.escape(leagueId)}"]`);
+    if (newBtn) newBtn.classList.remove('spinning');
+  }
+});
+
 // Filter tabs
 document.getElementById('tab-all').addEventListener('click', () => {
   AppState.filter = 'all';
@@ -1858,6 +2353,10 @@ document.getElementById('tab-action').addEventListener('click', () => {
 });
 document.getElementById('tab-stats').addEventListener('click', () => {
   AppState.filter = 'stats';
+  renderDashboard();
+});
+document.getElementById('tab-history').addEventListener('click', () => {
+  AppState.filter = 'history';
   renderDashboard();
 });
 
