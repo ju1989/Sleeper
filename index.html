@@ -716,6 +716,94 @@
       color: var(--text-1); margin: 20px 0 10px;
     }
 
+    /* ── BBF26 view ─────────────────────────────────── */
+    .bbf26-view { display: none; }
+    .bbf26-header {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px 24px; margin-bottom: 16px;
+    }
+    .bbf26-header-title {
+      font-family: var(--font-d); font-weight: 700; font-size: 15px;
+      color: var(--text-1); margin-bottom: 4px;
+    }
+    .bbf26-league-list {
+      display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 16px;
+    }
+    .bbf26-league-chip {
+      padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      background: rgba(47,180,107,.12); color: #9FE0BC;
+      border: 1px solid rgba(47,180,107,.25); font-family: var(--font-b);
+    }
+    .bbf26-load-btn {
+      padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 700;
+      background: var(--green); color: #fff; border: none; cursor: pointer;
+      font-family: var(--font-b); transition: opacity .15s;
+    }
+    .bbf26-load-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .bbf26-progress {
+      display: none; align-items: center; gap: 14px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px 24px; margin-bottom: 16px;
+    }
+    .bbf26-spinner {
+      width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,.1);
+      border-top-color: var(--green); border-radius: 50%;
+      animation: spin .7s linear infinite; flex-shrink: 0;
+    }
+    .bbf26-progress-text { font-size: 13px; color: var(--text-2); }
+    .bbf26-ratelimit { font-size: 11px; color: #E8B23A; margin-top: 2px; }
+    .bbf26-results { display: none; }
+    .bbf26-section-label {
+      font-family: var(--font-d); font-weight: 700; font-size: 14px;
+      color: var(--text-1); margin: 0 0 10px;
+    }
+    .bbf26-table-wrap {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden; margin-bottom: 18px;
+    }
+    .bbf26-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .bbf26-table th {
+      padding: 10px 14px; text-align: left; font-size: 10px; font-weight: 700;
+      letter-spacing: .07em; text-transform: uppercase; color: var(--text-3);
+      background: rgba(255,255,255,.03); border-bottom: 1px solid var(--border);
+    }
+    .bbf26-table td {
+      padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,.05);
+      color: var(--text-2); vertical-align: top;
+    }
+    .bbf26-table tr:last-child td { border-bottom: none; }
+    .bbf26-table td.strong { color: var(--text-1); font-weight: 600; }
+    .bbf26-table tr.me td { background: rgba(47,180,107,.06); }
+    .bbf26-expand-btn {
+      background: none; border: none; cursor: pointer; color: var(--text-3);
+      font-size: 11px; padding: 0; font-family: var(--font-b);
+    }
+    .bbf26-expand-btn:hover { color: var(--text-2); }
+    .bbf26-players {
+      display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px;
+    }
+    .bbf26-player-tag {
+      font-size: 10px; padding: 2px 8px; border-radius: 999px;
+      background: rgba(255,255,255,.07); color: var(--text-3);
+      font-family: var(--font-b);
+    }
+    .bbf26-stats-row {
+      display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .bbf26-stat-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 20px; min-width: 140px;
+    }
+    .bbf26-stat-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase; color: var(--text-3); margin-bottom: 4px;
+    }
+    .bbf26-stat-val {
+      font-family: var(--font-d); font-size: 22px; font-weight: 800; color: var(--text-1);
+    }
+
     @media (max-width: 600px) {
       .app-header { padding: 12px 16px; }
       .app-main { padding: 16px; }
@@ -785,6 +873,7 @@
         <button class="tab-btn" id="tab-action">Handlungsbedarf</button>
         <button class="tab-btn" id="tab-stats">Statistiken</button>
         <button class="tab-btn" id="tab-history">Verlauf</button>
+        <button class="tab-btn" id="tab-bbf26" style="display:none">Best Bald 26 Übersicht</button>
       </div>
     </div>
 
@@ -832,6 +921,39 @@
               <tr id="history-filter-row"></tr>
             </thead>
             <tbody id="history-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="bbf26-view" id="bbf26-view">
+      <div class="bbf26-header">
+        <div class="bbf26-header-title">Meine Best Bald Fantasy 26 Ligen</div>
+        <div class="bbf26-league-list" id="bbf26-my-leagues"></div>
+        <button class="bbf26-load-btn" id="bbf26-load-btn">Übersicht laden</button>
+      </div>
+      <div class="bbf26-progress" id="bbf26-progress">
+        <div class="bbf26-spinner"></div>
+        <div>
+          <div class="bbf26-progress-text" id="bbf26-progress-text">Suche Ligen…</div>
+          <div class="bbf26-ratelimit" id="bbf26-ratelimit" style="display:none">⚠ API-Limit erreicht — kurze Pause…</div>
+        </div>
+      </div>
+      <div class="bbf26-results" id="bbf26-results">
+        <div class="bbf26-stats-row" id="bbf26-stats-row"></div>
+        <div class="bbf26-section-label" id="bbf26-table-label">Rangliste</div>
+        <div class="bbf26-table-wrap">
+          <table class="bbf26-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nutzer</th>
+                <th>Liga</th>
+                <th>Punkte</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="bbf26-tbody"></tbody>
           </table>
         </div>
       </div>
@@ -1559,6 +1681,238 @@ function renderCard(lg, week, isExpanded) {
 // ══════════════════════════════════════════════════════════
 //  HISTORY
 // ══════════════════════════════════════════════════════════
+//  BEST BALD FANTASY 26
+// ══════════════════════════════════════════════════════════
+const BBF26_PREFIX = 'Best Bald Fantasy 26-';
+
+function bbf26Num(name) {
+  const m = (name || '').match(/^Best Bald Fantasy 26-(\d+)$/);
+  return m ? parseInt(m[1], 10) : null;
+}
+
+function hasBBF26Leagues() {
+  return AppState.leagues.some(l => bbf26Num(l.name) !== null);
+}
+
+// Discover all BBF26 leagues via linear increment.
+// Seeds from user's known leagues, then for each frontier league
+// checks its users' league-lists for the next numbered league.
+async function discoverBBF26Leagues(onProgress) {
+  const season = AppState.nflState?.season ?? '2026';
+
+  // Seed from user's known leagues
+  const leagueMap = new Map(); // num -> { id, name }
+  for (const lg of AppState.leagues) {
+    const n = bbf26Num(lg.name);
+    if (n !== null) leagueMap.set(n, { id: lg.leagueId, name: lg.name });
+  }
+
+  // Cache: userId -> their BBF26 leagues [{name, league_id}]
+  const userCache = new Map();
+
+  async function userBBF26Leagues(userId) {
+    if (userCache.has(userId)) return userCache.get(userId);
+    const all = await API.userLeagues(userId, season);
+    const filtered = (all || []).filter(l => bbf26Num(l.name) !== null);
+    userCache.set(userId, filtered);
+    return filtered;
+  }
+
+  // From a league, find next numbered league N+1 via its users
+  async function findNext(currentNum, currentLgId) {
+    const nextNum = currentNum + 1;
+    const nextName = BBF26_PREFIX + nextNum;
+    const users = await API.leagueUsers(currentLgId);
+    for (const u of users) {
+      if (u.is_bot) continue;
+      const their = await userBBF26Leagues(u.user_id);
+      const found = their.find(l => l.name === nextName);
+      if (found) return { num: nextNum, id: found.league_id, name: nextName };
+    }
+    return null;
+  }
+
+  // Start linear scan from 1 upward
+  let n = 1;
+  while (true) {
+    if (!leagueMap.has(n)) {
+      // Try to find league n using users of league n-1
+      const prev = leagueMap.get(n - 1);
+      if (!prev) break;
+      onProgress(`Suche Liga ${BBF26_PREFIX}${n}…`);
+      const found = await findNext(n - 1, prev.id);
+      if (!found) break;
+      leagueMap.set(found.num, { id: found.id, name: found.name });
+    }
+    // Now try to find n+1 using league n
+    const current = leagueMap.get(n);
+    onProgress(`Prüfe ob Liga ${BBF26_PREFIX}${n + 1} existiert…`);
+    const next = await findNext(n, current.id);
+    if (!next) break;
+    leagueMap.set(next.num, { id: next.id, name: next.name });
+    n++;
+  }
+
+  return [...leagueMap.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([, lg]) => lg);
+}
+
+async function loadBBF26Data() {
+  const progressEl  = document.getElementById('bbf26-progress');
+  const progressTxt = document.getElementById('bbf26-progress-text');
+  const ratelimitEl = document.getElementById('bbf26-ratelimit');
+  const resultsEl   = document.getElementById('bbf26-results');
+  const loadBtn     = document.getElementById('bbf26-load-btn');
+
+  progressEl.style.display = 'flex';
+  resultsEl.style.display  = 'none';
+  loadBtn.disabled = true;
+
+  const onProgress = (msg) => { progressTxt.textContent = msg; };
+  const checkRL = async () => {
+    if (RL.tokens < 2) {
+      ratelimitEl.style.display = 'block';
+      await new Promise(r => setTimeout(r, Math.ceil((2 - RL.tokens) * 120) + 200));
+      ratelimitEl.style.display = 'none';
+    }
+  };
+
+  try {
+    onProgress('Entdecke alle Best Bald Fantasy 26 Ligen…');
+    const leagues = await discoverBBF26Leagues(onProgress);
+
+    const players = await API.players();
+    const userId  = AppState.user?.user_id;
+
+    // Collect all roster entries: { leagueName, leagueId, username, userId, fpts, playerIds }
+    const entries = [];
+    for (const lg of leagues) {
+      onProgress(`Lade Daten: ${lg.name}…`);
+      await checkRL();
+      const [rosters, lgUsers] = await Promise.all([
+        API.rosters(lg.id),
+        API.leagueUsers(lg.id),
+      ]);
+      const userMap = {};
+      for (const u of (lgUsers || [])) userMap[u.user_id] = u.display_name || u.user_id;
+
+      for (const r of (rosters || [])) {
+        const fpts = (r.settings?.fpts ?? 0) + (r.settings?.fpts_decimal ?? 0) / 100;
+        entries.push({
+          leagueName: lg.name,
+          leagueId:   lg.id,
+          leagueNum:  bbf26Num(lg.name),
+          username:   userMap[r.owner_id] || r.owner_id || '—',
+          userId:     r.owner_id,
+          fpts,
+          playerIds:  r.players || [],
+        });
+      }
+    }
+
+    progressEl.style.display = 'none';
+    loadBtn.disabled = false;
+    renderBBF26Results(entries, players, userId, leagues.length);
+
+  } catch (err) {
+    progressEl.style.display = 'none';
+    loadBtn.disabled = false;
+    console.error('BBF26 load error', err);
+  }
+}
+
+function renderBBF26Results(entries, players, myUserId, totalLeagues) {
+  const resultsEl = document.getElementById('bbf26-results');
+  resultsEl.style.display = 'block';
+
+  // Summary stats
+  const statsRow = document.getElementById('bbf26-stats-row');
+  statsRow.innerHTML = [
+    { label: 'Ligen gesamt', val: totalLeagues },
+    { label: 'Teilnehmer',   val: new Set(entries.map(e => e.userId)).size },
+    { label: 'Einträge',     val: entries.length },
+  ].map(s => `<div class="bbf26-stat-box">
+    <div class="bbf26-stat-label">${s.label}</div>
+    <div class="bbf26-stat-val">${s.val}</div>
+  </div>`).join('');
+
+  // Sort by points desc
+  const sorted = [...entries].sort((a, b) => b.fpts - a.fpts);
+
+  // Top 15 + all entries of current user
+  const myEntries = sorted.filter(e => e.userId === myUserId);
+  const top15 = sorted.slice(0, 15);
+  const displayed = [...top15];
+  for (const e of myEntries) {
+    if (!displayed.find(d => d.userId === e.userId && d.leagueId === e.leagueId)) {
+      displayed.push(e);
+    }
+  }
+  displayed.sort((a, b) => b.fpts - a.fpts);
+
+  const myEntrySet = new Set(myEntries.map(e => e.leagueId));
+  const tableLabel = document.getElementById('bbf26-table-label');
+  tableLabel.textContent = `Top 15 · ${myEntries.length > 0 ? '+ deine Einträge' : ''}`;
+
+  const expanded = new Set();
+  const tbody = document.getElementById('bbf26-tbody');
+
+  function renderRows() {
+    tbody.innerHTML = displayed.map((e, i) => {
+      const rank = sorted.indexOf(e) + 1;
+      const isMe = e.userId === myUserId;
+      const isExp = expanded.has(i);
+      const pts = e.fpts === 0 ? '—' : e.fpts.toFixed(2);
+      const badgeCls = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : rank <= 4 ? 'top' : '';
+
+      const playerTags = isExp ? e.playerIds.map(pid => {
+        const p = players[pid];
+        const name = p?.full_name || p?.last_name || pid;
+        const pos  = p?.position || '?';
+        return `<span class="bbf26-player-tag">${esc(pos)} ${esc(name)}</span>`;
+      }).join('') : '';
+
+      return `<tr class="${isMe ? 'me' : ''}" data-row="${i}">
+        <td><span class="rank-badge ${badgeCls}">${rank}</span></td>
+        <td class="strong">${esc(e.username)}${isMe ? ' <span style="font-size:10px;color:var(--green)">●</span>' : ''}</td>
+        <td style="color:var(--text-3)">${esc(e.leagueName.replace(BBF26_PREFIX, '#'))}</td>
+        <td class="strong">${pts}</td>
+        <td><button class="bbf26-expand-btn" data-expand="${i}">${isExp ? '▴ Details' : '▾ Details'}</button></td>
+      </tr>${isExp ? `<tr class="${isMe ? 'me' : ''}"><td colspan="5" style="padding:0 14px 12px">
+        <div class="bbf26-players">${playerTags}</div>
+      </td></tr>` : ''}`;
+    }).join('');
+  }
+
+  renderRows();
+
+  tbody.addEventListener('click', e => {
+    const btn = e.target.closest('[data-expand]');
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.expand, 10);
+    if (expanded.has(idx)) expanded.delete(idx);
+    else expanded.add(idx);
+    renderRows();
+  });
+}
+
+function renderBBF26Setup() {
+  // Show user's own BBF26 leagues as chips
+  const myLeagues = document.getElementById('bbf26-my-leagues');
+  if (myLeagues.children.length === 0) {
+    const bbf = AppState.leagues
+      .filter(l => bbf26Num(l.name) !== null)
+      .sort((a, b) => bbf26Num(a.name) - bbf26Num(b.name));
+    myLeagues.innerHTML = bbf.map(l =>
+      `<span class="bbf26-league-chip">${esc(l.name.replace(BBF26_PREFIX, '#'))}</span>`
+    ).join('');
+
+    document.getElementById('bbf26-load-btn').addEventListener('click', loadBBF26Data);
+  }
+}
+
+// ══════════════════════════════════════════════════════════
 function renderHistorySetup() {
   const currentYear = new Date().getFullYear();
   const grid = document.getElementById('season-grid');
@@ -1835,21 +2189,26 @@ function renderDashboard() {
   const visible = filter === 'action' ? actionLeagues : leagues;
   const isStats   = filter === 'stats';
   const isHistory = filter === 'history';
+  const isBBF26   = filter === 'bbf26';
+  const isBBF26User = hasBBF26Leagues();
 
   // Show/hide views
-  document.getElementById('cards-grid').style.display    = (!isStats && !isHistory) ? 'grid'  : 'none';
-  document.getElementById('stats-view').style.display    = isStats   ? 'block' : 'none';
-  document.getElementById('history-view').style.display  = isHistory ? 'block' : 'none';
-  document.getElementById('alert-banner').style.display  = (isStats || isHistory) ? 'none' : '';
+  const showCards = !isStats && !isHistory && !isBBF26;
+  document.getElementById('cards-grid').style.display    = showCards  ? 'grid'  : 'none';
+  document.getElementById('stats-view').style.display    = isStats    ? 'block' : 'none';
+  document.getElementById('history-view').style.display  = isHistory  ? 'block' : 'none';
+  document.getElementById('bbf26-view').style.display    = isBBF26    ? 'block' : 'none';
+  document.getElementById('alert-banner').style.display  = showCards  ? '' : 'none';
+  document.getElementById('tab-bbf26').style.display     = isBBF26User ? '' : 'none';
 
   // Header
   document.getElementById('header-week').textContent = `NFL ${season} · Woche ${week}`;
   document.getElementById('page-eyebrow').textContent = `Saison ${season}`;
   document.getElementById('page-summary').textContent = isStats
     ? `Saison ${season} · ${total} Ligen analysiert`
-    : isHistory
-      ? 'Historische Ligaergebnisse'
-      : `Saison ${season} · ${total} Liga${total !== 1 ? 'en' : ''} · ${actionCount} mit Handlungsbedarf`;
+    : isHistory ? 'Historische Ligaergebnisse'
+    : isBBF26   ? 'Best Bald Fantasy 26 · Saison-Übersicht'
+    : `Saison ${season} · ${total} Liga${total !== 1 ? 'en' : ''} · ${actionCount} mit Handlungsbedarf`;
 
   // Tabs
   document.getElementById('tab-all').textContent    = `Alle Ligen · ${total}`;
@@ -1858,9 +2217,11 @@ function renderDashboard() {
   document.getElementById('tab-action').classList.toggle('active',  filter === 'action');
   document.getElementById('tab-stats').classList.toggle('active',   filter === 'stats');
   document.getElementById('tab-history').classList.toggle('active', filter === 'history');
+  document.getElementById('tab-bbf26').classList.toggle('active',   filter === 'bbf26');
 
   if (isStats)   { renderStats(); return; }
   if (isHistory) { renderHistorySetup(); return; }
+  if (isBBF26)   { renderBBF26Setup(); return; }
 
   // Alert banner
   const onClock    = leagues.filter(l => l.isOnClock).length;
@@ -2357,6 +2718,10 @@ document.getElementById('tab-stats').addEventListener('click', () => {
 });
 document.getElementById('tab-history').addEventListener('click', () => {
   AppState.filter = 'history';
+  renderDashboard();
+});
+document.getElementById('tab-bbf26').addEventListener('click', () => {
+  AppState.filter = 'bbf26';
   renderDashboard();
 });
 
