@@ -2033,14 +2033,18 @@ function renderHistorySetup() {
 
 function parsePlacement(winners, losers, myRosterId) {
   const mid = String(myRosterId);
-  // Find the match where this roster got a placement (p field)
-  const allMatches = [...(winners || []), ...(losers || [])];
-  for (const m of allMatches) {
-    if (m.p == null) continue;
-    if (String(m.w) === mid) return m.p;
-    if (String(m.l) === mid) return m.p + 1;
+  function findIn(bracket) {
+    for (const m of (bracket || [])) {
+      if (m.p == null) continue;
+      if (String(m.w) === mid) return m.p;
+      if (String(m.l) === mid) return m.p + 1;
+    }
+    return null;
   }
-  return null;
+  return {
+    playoff:    findIn(winners),
+    toiletBowl: findIn(losers),
+  };
 }
 
 async function loadHistoryData(seasons) {
@@ -2090,6 +2094,7 @@ async function loadHistoryData(seasons) {
       const totalTeams = lg.total_rosters ?? 12;
 
       let playoffPlacement = null;
+      let toiletBowl = null;
       try {
         // Check rate limit
         if (RL.tokens < 2) {
@@ -2101,7 +2106,9 @@ async function loadHistoryData(seasons) {
           API.winnersBracket(lg.league_id),
           API.losersBracket(lg.league_id),
         ]);
-        playoffPlacement = parsePlacement(wb, lb, myRoster.roster_id);
+        const placement = parsePlacement(wb, lb, myRoster.roster_id);
+        playoffPlacement = placement.playoff;
+        toiletBowl       = placement.toiletBowl;
       } catch (_) {}
 
       rows.push({
@@ -2111,6 +2118,7 @@ async function loadHistoryData(seasons) {
         totalTeams,
         regRank,
         playoffPlacement,
+        toiletBowl,
       });
     }
   }
@@ -2123,7 +2131,7 @@ async function loadHistoryData(seasons) {
 }
 
 // History table state
-const HistoryTable = { sortCol: 'season', sortDir: -1, filters: { season: '', name: '', totalTeams: '', regRank: '', playoffPlacement: '' } };
+const HistoryTable = { sortCol: 'season', sortDir: -1, filters: { season: '', name: '', totalTeams: '', regRank: '', playoffPlacement: '', toiletBowl: '' } };
 
 function rankBadge(rank, total) {
   if (rank == null) return `<span style="color:var(--text-3)">—</span>`;
@@ -2139,10 +2147,10 @@ function renderHistoryResults(rows) {
   const resultsEl = document.getElementById('history-results');
   resultsEl.style.display = 'block';
 
-  // Avg rank by team count (using playoff placement if available, else regRank)
+  // Avg rank by team count (playoff > toiletBowl > regRank)
   const byTeamCount = {};
   for (const r of rows) {
-    const rank = r.playoffPlacement ?? r.regRank;
+    const rank = r.playoffPlacement ?? r.toiletBowl ?? r.regRank;
     if (rank == null) continue;
     if (!byTeamCount[r.totalTeams]) byTeamCount[r.totalTeams] = [];
     byTeamCount[r.totalTeams].push(rank);
@@ -2173,6 +2181,7 @@ const HISTORY_COLS = [
   { key: 'totalTeams',       label: 'Teams' },
   { key: 'regRank',          label: 'Reg.-Rang' },
   { key: 'playoffPlacement', label: 'Playoff' },
+  { key: 'toiletBowl',       label: 'Toilet Bowl' },
 ];
 
 function initHistoryTableListeners() {
@@ -2252,7 +2261,7 @@ function renderHistoryTable(rows) {
   });
 
   if (visible.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-3);padding:20px">Keine Ergebnisse.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-3);padding:20px">Keine Ergebnisse.</td></tr>`;
     return;
   }
   tbody.innerHTML = visible.map(r => `<tr>
@@ -2264,6 +2273,7 @@ function renderHistoryTable(rows) {
     <td style="color:var(--text-3)">${r.totalTeams}</td>
     <td>${rankBadge(r.regRank, r.totalTeams)}</td>
     <td>${rankBadge(r.playoffPlacement, r.totalTeams)}</td>
+    <td>${rankBadge(r.toiletBowl, r.totalTeams)}</td>
   </tr>`).join('');
 }
 
