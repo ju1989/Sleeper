@@ -625,6 +625,85 @@
     .stat-pos-chip.K   { background: rgba(255,255,255,.10); color: var(--text-3); }
     .stat-pos-chip.DEF { background: rgba(255,255,255,.10); color: var(--text-3); }
 
+    /* ── Kader view ─────────────────────────────────── */
+    .kader-view { display: none; }
+    .kader-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px; margin-bottom: 16px;
+    }
+    .kader-summary-bar {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .kader-chip {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      font-family: var(--font-b);
+    }
+    .kader-chip.out   { background: rgba(255,90,77,.13);  color: #FF5A4D; }
+    .kader-chip.q     { background: rgba(232,178,58,.13); color: #E8B23A; }
+    .kader-chip.bye   { background: rgba(74,168,232,.13); color: #4AA8E8; }
+    .kader-chip.ok    { background: rgba(47,180,107,.13); color: #2FB46B; }
+    .kader-group-label {
+      font-family: var(--font-d); font-weight: 700; font-size: 13px;
+      color: var(--text-3); letter-spacing: .05em; text-transform: uppercase;
+      margin: 20px 0 8px; padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .kader-group-label:first-child { margin-top: 0; }
+    .kader-table-wrap {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden; margin-bottom: 6px;
+    }
+    .kader-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .kader-table th {
+      padding: 9px 14px; text-align: left; font-size: 10px; font-weight: 700;
+      letter-spacing: .07em; text-transform: uppercase; color: var(--text-3);
+      background: rgba(255,255,255,.03); border-bottom: 1px solid var(--border);
+      cursor: pointer; user-select: none; white-space: nowrap;
+    }
+    .kader-table th:hover { color: var(--text-2); }
+    .kader-sort-arrow { margin-left: 4px; opacity: .8; }
+    .kader-sort-rank {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px; border-radius: 50%; font-size: 9px; font-weight: 800;
+      background: rgba(255,255,255,.12); color: var(--text-2);
+      margin-left: 3px; vertical-align: middle;
+    }
+    .kader-table td {
+      padding: 9px 14px; border-bottom: 1px solid rgba(255,255,255,.05);
+      color: var(--text-2); vertical-align: middle;
+    }
+    .kader-table tr:last-child td { border-bottom: none; }
+    .kader-status-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;
+      font-family: var(--font-b);
+    }
+    .kader-status-badge.ok  { background: rgba(47,180,107,.13); color: #2FB46B; }
+    .kader-status-badge.out { background: rgba(255,90,77,.13);  color: #FF5A4D; }
+    .kader-status-badge.q   { background: rgba(232,178,58,.13); color: #E8B23A; }
+    .kader-status-badge.bye { background: rgba(74,168,232,.13); color: #4AA8E8; }
+    .kader-group-btn {
+      padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 700;
+      border: 1.5px solid var(--border); background: transparent; color: var(--text-2);
+      cursor: pointer; font-family: var(--font-b); transition: all .15s;
+    }
+    .kader-group-btn.active { background: var(--card); border-color: var(--green); color: var(--text-1); }
+    .kader-filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .kader-filter-btn {
+      padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      border: 1.5px solid var(--border); background: transparent; color: var(--text-3);
+      cursor: pointer; font-family: var(--font-b); transition: all .15s;
+    }
+    .kader-filter-btn.active { border-color: currentColor; }
+    .kader-filter-btn.f-all  { color: var(--text-2); }
+    .kader-filter-btn.f-all.active  { background: rgba(255,255,255,.07); color: var(--text-1); }
+    .kader-filter-btn.f-out.active  { background: rgba(255,90,77,.13);  color: #FF5A4D; border-color: rgba(255,90,77,.4); }
+    .kader-filter-btn.f-q.active    { background: rgba(232,178,58,.13); color: #E8B23A; border-color: rgba(232,178,58,.4); }
+    .kader-filter-btn.f-bye.active  { background: rgba(74,168,232,.13); color: #4AA8E8; border-color: rgba(74,168,232,.4); }
+
     /* ── History view ────────────────────────────────── */
     .history-view { display: none; }
     .history-setup {
@@ -870,8 +949,8 @@
       </div>
       <div class="tab-group">
         <button class="tab-btn active" id="tab-all">Alle Ligen</button>
-        <button class="tab-btn" id="tab-action">Handlungsbedarf</button>
         <button class="tab-btn" id="tab-stats">Statistiken</button>
+        <button class="tab-btn" id="tab-kader">Mein Kader</button>
         <button class="tab-btn" id="tab-history">Verlauf</button>
         <button class="tab-btn" id="tab-bbf26" style="display:none">Best Bald 26 Übersicht</button>
       </div>
@@ -894,6 +973,12 @@
     <div class="stats-view" id="stats-view">
       <div class="stats-filter" id="stats-league-filter"></div>
       <div class="stats-grid" id="stats-grid"></div>
+    </div>
+
+    <div class="kader-view" id="kader-view">
+      <div class="kader-toolbar" id="kader-toolbar"></div>
+      <div id="kader-summary"></div>
+      <div id="kader-content"></div>
     </div>
 
     <div class="history-view" id="history-view">
@@ -1169,7 +1254,7 @@ function buildLineup(roster, league, players, week) {
       else if (p.bye_week != null && Number(p.bye_week) === Number(week)) status = 'bye';
     }
     const name = p ? (p.full_name || [p.first_name, p.last_name].filter(Boolean).join(' ') || 'Unbekannt') : 'Kein Spieler';
-    return { slot: pos, name, team: p?.team || '', pos: p?.position || pos, status };
+    return { slot: pos, name, team: p?.team || '', pos: p?.position || pos, status, playerId: pid, byeWeek: p?.bye_week ?? null };
   });
 }
 
@@ -1184,7 +1269,7 @@ function buildBestBallRoster(roster, players, week) {
       else if (p.bye_week != null && Number(p.bye_week) === Number(week)) status = 'bye';
     }
     const name = p ? (p.full_name || [p.first_name, p.last_name].filter(Boolean).join(' ') || 'Unbekannt') : `#${pid}`;
-    return { slot: p?.position || '?', name, team: p?.team || '', pos: p?.position || '?', status };
+    return { slot: p?.position || '?', name, team: p?.team || '', pos: p?.position || '?', status, playerId: pid, byeWeek: p?.bye_week ?? null };
   });
 }
 
@@ -2001,6 +2086,198 @@ function renderBBF26Setup() {
 }
 
 // ══════════════════════════════════════════════════════════
+//  KADER (ROSTER HEALTH)
+// ══════════════════════════════════════════════════════════
+const KaderState = { grouped: false, filter: 'all', sort: [] };
+// sort: [{ key, dir }]  dir: 1=asc, -1=desc
+// keys: 'slot','name','team','leagueName','status','bye'
+
+const KADER_SORT_KEYS = {
+  slot:       r => r.slot,
+  name:       r => (r.name||'').toLowerCase(),
+  team:       r => (r.team||'').toLowerCase(),
+  leagueName: r => (r.leagueName||'').toLowerCase(),
+  status:     r => { const o={out:0,q:1,d:1,bye:2,'':3}; return o[r.status??''] ?? 3; },
+};
+
+function kaderSortFn(key) {
+  if (KADER_SORT_KEYS[key]) return KADER_SORT_KEYS[key];
+  // bye_N keys: sort "has bye in week N" first (0), others second (1)
+  const m = key.match(/^bye_(\d+)$/);
+  if (m) { const w = parseInt(m[1], 10); return r => r.byeWeek === w ? 0 : 1; }
+  return null;
+}
+
+function applyKaderSort(rows) {
+  if (!KaderState.sort.length) return rows;
+  return [...rows].sort((a, b) => {
+    for (const { key, dir } of KaderState.sort) {
+      const fn = kaderSortFn(key); if (!fn) continue;
+      const av = fn(a), bv = fn(b);
+      if (av < bv) return -dir;
+      if (av > bv) return  dir;
+    }
+    return 0;
+  });
+}
+
+function renderKader() {
+  const week = AppState.nflState?.week ?? 1;
+
+  // Collect all starter rows from already-loaded league data — no API call needed
+  const rows = [];
+  for (const lg of AppState.leagues) {
+    if (!lg.lineup || lg.lineup.length === 0) continue;
+    for (const p of lg.lineup) {
+      rows.push({
+        leagueName: lg.name,
+        leagueId:   lg.leagueId,
+        slot:       p.slot,
+        pos:        p.pos,
+        name:       p.name,
+        team:       p.team,
+        status:     p.status,
+        byeWeek:    p.byeWeek,
+      });
+    }
+  }
+
+  // Summary counts
+  const counts = { out: 0, q: 0, bye: 0, ok: 0 };
+  for (const r of rows) counts[r.status] = (counts[r.status] || 0) + 1;
+
+  // Build toolbar
+  const toolbar = document.getElementById('kader-toolbar');
+  toolbar.innerHTML = `
+    <div class="kader-filter-group">
+      <button class="kader-filter-btn f-all ${KaderState.filter === 'all' ? 'active' : ''}" data-kfilter="all">Alle</button>
+      <button class="kader-filter-btn f-out ${KaderState.filter === 'out' ? 'active' : ''}" data-kfilter="out">OUT${counts.out > 0 ? ` (${counts.out})` : ''}</button>
+      <button class="kader-filter-btn f-q   ${KaderState.filter === 'q'   ? 'active' : ''}" data-kfilter="q">Fraglich${counts.q > 0 ? ` (${counts.q})` : ''}</button>
+      <button class="kader-filter-btn f-bye ${KaderState.filter === 'bye' ? 'active' : ''}" data-kfilter="bye">Bye${counts.bye > 0 ? ` (${counts.bye})` : ''}</button>
+    </div>
+    <button class="kader-group-btn ${KaderState.grouped ? 'active' : ''}" id="kader-group-btn">Nach Liga gruppieren</button>`;
+
+  document.getElementById('kader-group-btn').addEventListener('click', () => {
+    KaderState.grouped = !KaderState.grouped;
+    renderKader();
+  });
+  toolbar.querySelectorAll('[data-kfilter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      KaderState.filter = btn.dataset.kfilter;
+      renderKader();
+    });
+  });
+
+  // Summary chips
+  const summaryItems = [
+    counts.out > 0 && { cls: 'out', text: `${counts.out} OUT` },
+    counts.q   > 0 && { cls: 'q',   text: `${counts.q} Fraglich` },
+    counts.bye > 0 && { cls: 'bye', text: `${counts.bye} Bye Woche ${week}` },
+                       { cls: 'ok',  text: `${counts.ok} Fit` },
+  ].filter(Boolean);
+  document.getElementById('kader-summary').innerHTML =
+    `<div class="kader-summary-bar">${summaryItems.map(l =>
+      `<span class="kader-chip ${l.cls}">${l.text}</span>`).join('')}</div>`;
+
+  // Apply filter
+  const visible = KaderState.filter === 'all' ? rows : rows.filter(r => r.status === KaderState.filter);
+
+  if (visible.length === 0) {
+    document.getElementById('kader-content').innerHTML =
+      `<div style="text-align:center;padding:40px;color:var(--text-3)">Keine Spieler gefunden.</div>`;
+    return;
+  }
+
+  function statusBadge(status, byeWeek) {
+    const labels = { ok: 'Fit', out: 'OUT', q: 'Fraglich', bye: byeWeek ? `Bye W${byeWeek}` : 'Bye' };
+    return `<span class="kader-status-badge ${status}">${labels[status] || status}</span>`;
+  }
+
+  // One column per bye week that appears in the visible rows
+  const byeWeeks = [...new Set(visible.map(r => r.byeWeek).filter(w => w != null))].sort((a, b) => a - b);
+
+  function thSort(key, label, extraStyle) {
+    const idx  = KaderState.sort.findIndex(s => s.key === key);
+    const entry = idx >= 0 ? KaderState.sort[idx] : null;
+    const arrow = entry ? (entry.dir === 1 ? ' ↑' : ' ↓') : '';
+    const rank  = KaderState.sort.length > 1 && idx >= 0
+      ? `<span class="kader-sort-rank">${idx + 1}</span>` : '';
+    const active = entry ? 'color:var(--text-1);' : '';
+    return `<th data-ksort="${key}" style="${active}${extraStyle||''}">${label}<span class="kader-sort-arrow">${arrow}</span>${rank}</th>`;
+  }
+
+  function buildTable(playerRows, showLeagueCol) {
+    const sorted     = applyKaderSort(playerRows);
+    const leagueHeader = showLeagueCol ? thSort('leagueName','Liga') : '';
+    const byeHeaders   = byeWeeks.map(w =>
+      thSort(`bye_${w}`, `Spieltag ${w}`, 'text-align:center;min-width:72px')).join('');
+    const wrap = document.createElement('div');
+    wrap.className = 'kader-table-wrap';
+    wrap.innerHTML = `<table class="kader-table">
+      <thead><tr>
+        ${thSort('slot','Pos')}${thSort('name','Spieler')}${thSort('team','Team')}${leagueHeader}${thSort('status','Status')}${byeHeaders}
+      </tr></thead>
+      <tbody>${sorted.map(r => {
+        const byeCells = byeWeeks.map(w =>
+          r.byeWeek === w
+            ? `<td style="text-align:center"><span class="kader-status-badge bye">Bye</span></td>`
+            : `<td style="text-align:center;color:rgba(255,255,255,.15);font-size:11px">·</td>`
+        ).join('');
+        return `<tr>
+          <td style="font-size:11px;font-weight:800;color:var(--green)">${esc(r.slot)}</td>
+          <td style="color:var(--text-1);font-weight:600">${esc(r.name)}</td>
+          <td style="color:var(--text-3)">${esc(r.team) || '—'}</td>
+          ${showLeagueCol ? `<td style="color:var(--text-3);font-size:12px">${esc(displayName(r.leagueName))}</td>` : ''}
+          <td>${statusBadge(r.status, r.byeWeek)}</td>
+          ${byeCells}
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+    // Attach sort click listeners (permanent, no re-render loop)
+    wrap.querySelectorAll('th[data-ksort]').forEach(th => {
+      th.addEventListener('click', e => {
+        const key = th.dataset.ksort;
+        const multi = e.shiftKey;
+        const existing = KaderState.sort.findIndex(s => s.key === key);
+        if (!multi) {
+          if (existing >= 0 && KaderState.sort.length === 1) {
+            KaderState.sort[0].dir *= -1;
+          } else {
+            KaderState.sort = [{ key, dir: 1 }];
+          }
+        } else {
+          if (existing >= 0) {
+            KaderState.sort[existing].dir *= -1;
+          } else {
+            KaderState.sort.push({ key, dir: 1 });
+          }
+        }
+        renderKader();
+      });
+    });
+    return wrap;
+  }
+
+  const content = document.getElementById('kader-content');
+  content.innerHTML = '';
+  if (KaderState.grouped) {
+    const byLeague = {};
+    for (const r of visible) {
+      if (!byLeague[r.leagueId]) byLeague[r.leagueId] = { name: r.leagueName, rows: [] };
+      byLeague[r.leagueId].rows.push(r);
+    }
+    for (const lg of Object.values(byLeague)) {
+      const lbl = document.createElement('div');
+      lbl.className = 'kader-group-label';
+      lbl.textContent = displayName(lg.name);
+      content.append(lbl, buildTable(lg.rows, false));
+    }
+  } else {
+    content.append(buildTable(visible, true));
+  }
+}
+
+// ══════════════════════════════════════════════════════════
 function renderHistorySetup() {
   const currentYear = new Date().getFullYear();
   const grid = document.getElementById('season-grid');
@@ -2282,18 +2559,19 @@ function renderDashboard() {
   const week    = nflState?.week ?? 1;
   const season  = nflState?.season ?? '2025';
   const total   = leagues.length;
-  const actionLeagues = leagues.filter(l => l.severity === 'urgent' || l.severity === 'attention');
-  const actionCount   = actionLeagues.length;
-  const visible = filter === 'action' ? actionLeagues : leagues;
+  const actionCount   = leagues.filter(l => l.severity === 'urgent' || l.severity === 'attention').length;
+  const visible = leagues;
   const isStats   = filter === 'stats';
+  const isKader   = filter === 'kader';
   const isHistory = filter === 'history';
   const isBBF26   = filter === 'bbf26';
   const isBBF26User = hasBBF26Leagues();
 
   // Show/hide views
-  const showCards = !isStats && !isHistory && !isBBF26;
+  const showCards = !isStats && !isKader && !isHistory && !isBBF26;
   document.getElementById('cards-grid').style.display    = showCards  ? 'grid'  : 'none';
   document.getElementById('stats-view').style.display    = isStats    ? 'block' : 'none';
+  document.getElementById('kader-view').style.display    = isKader    ? 'block' : 'none';
   document.getElementById('history-view').style.display  = isHistory  ? 'block' : 'none';
   document.getElementById('bbf26-view').style.display    = isBBF26    ? 'block' : 'none';
   document.getElementById('alert-banner').style.display  = showCards  ? '' : 'none';
@@ -2304,20 +2582,21 @@ function renderDashboard() {
   document.getElementById('page-eyebrow').textContent = `Saison ${season}`;
   document.getElementById('page-summary').textContent = isStats
     ? `Saison ${season} · ${total} Ligen analysiert`
+    : isKader   ? `Woche ${week} · Kader-Übersicht aller Ligen`
     : isHistory ? 'Historische Ligaergebnisse'
     : isBBF26   ? 'Best Bald Fantasy 26 · Saison-Übersicht'
     : `Saison ${season} · ${total} Liga${total !== 1 ? 'en' : ''} · ${actionCount} mit Handlungsbedarf`;
 
   // Tabs
   document.getElementById('tab-all').textContent    = `Alle Ligen · ${total}`;
-  document.getElementById('tab-action').textContent = `Handlungsbedarf · ${actionCount}`;
   document.getElementById('tab-all').classList.toggle('active',     filter === 'all');
-  document.getElementById('tab-action').classList.toggle('active',  filter === 'action');
   document.getElementById('tab-stats').classList.toggle('active',   filter === 'stats');
+  document.getElementById('tab-kader').classList.toggle('active',   filter === 'kader');
   document.getElementById('tab-history').classList.toggle('active', filter === 'history');
   document.getElementById('tab-bbf26').classList.toggle('active',   filter === 'bbf26');
 
   if (isStats)   { renderStats(); return; }
+  if (isKader)   { renderKader(); return; }
   if (isHistory) { renderHistorySetup(); return; }
   if (isBBF26)   { renderBBF26Setup(); return; }
 
@@ -2806,12 +3085,12 @@ document.getElementById('tab-all').addEventListener('click', () => {
   AppState.filter = 'all';
   renderDashboard();
 });
-document.getElementById('tab-action').addEventListener('click', () => {
-  AppState.filter = 'action';
-  renderDashboard();
-});
 document.getElementById('tab-stats').addEventListener('click', () => {
   AppState.filter = 'stats';
+  renderDashboard();
+});
+document.getElementById('tab-kader').addEventListener('click', () => {
+  AppState.filter = 'kader';
   renderDashboard();
 });
 document.getElementById('tab-history').addEventListener('click', () => {
